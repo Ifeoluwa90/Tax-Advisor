@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Contribution Advisor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #141416;
+            --bg-card: #1a1a1e;
+            --bg-input: #222228;
+            --border: #2a2a30;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-muted: #6e6e73;
+            --accent-green: #34c759;
+            --accent-green-dim: rgba(52, 199, 89, 0.15);
+            --accent-blue: #007aff;
+            --accent-blue-dim: rgba(0, 122, 255, 0.15);
+            --accent-orange: #ff9500;
+            --accent-orange-dim: rgba(255, 149, 0, 0.15);
+            --accent-purple: #af52de;
+            --accent-purple-dim: rgba(175, 82, 222, 0.15);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: 'DM Mono', monospace;
+            font-size: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-dim);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-prefix {
+            position: relative;
+        }
+
+        .input-prefix input {
+            padding-left: 32px;
+        }
+
+        .input-prefix::before {
+            content: '$';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .input-suffix {
+            position: relative;
+        }
+
+        .input-suffix input {
+            padding-right: 32px;
+        }
+
+        .input-suffix::after {
+            content: '%';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px 24px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+        }
+
+        button:hover {
+            background: #0a84ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Section */
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .result-section {
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .result-section h3 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-value.green { color: var(--accent-green); }
+        .stat-value.blue { color: var(--accent-blue); }
+        .stat-value.orange { color: var(--accent-orange); }
+        .stat-value.purple { color: var(--accent-purple); }
+
+        /* Recommendation Badge */
+        .recommendation-box {
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .recommendation-box.roth {
+            background: var(--accent-green-dim);
+            border: 1px solid var(--accent-green);
+        }
+
+        .recommendation-box.traditional {
+            background: var(--accent-orange-dim);
+            border: 1px solid var(--accent-orange);
+        }
+
+        .recommendation-box.both {
+            background: var(--accent-purple-dim);
+            border: 1px solid var(--accent-purple);
+        }
+
+        .recommendation-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .recommendation-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .recommendation-box.roth .recommendation-value { color: var(--accent-green); }
+        .recommendation-box.traditional .recommendation-value { color: var(--accent-orange); }
+        .recommendation-box.both .recommendation-value { color: var(--accent-purple); }
+
+        /* Reasons List */
+        .reasons-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .reasons-list li {
+            padding: 10px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .reasons-list li:last-child {
+            border-bottom: none;
+        }
+
+        .reasons-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .comparison-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .comparison-value {
+            font-family: 'DM Mono', monospace;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 400px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+        /* Footer */
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tax Contribution Advisor</h1>
+            <p class="subtitle">Roth vs Traditional — find what's best for your situation</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Input Form -->
+            <div class="card">
+                <div class="card-title">Your Information</div>
+                
+                <div class="form-group">
+                    <label for="income">Gross Annual Income</label>
+                    <div class="input-prefix">
+                        <input type="number" id="income" placeholder="50,000" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <select id="state">
+                        <option value="">Select your state</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="filing">Filing Status</label>
+                    <select id="filing">
+                        <option value="single">Single</option>
+                        <option value="married">Married Filing Jointly</option>
+                        <option value="head_of_household">Head of Household</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" placeholder="30" min="18" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="retirement-rate">Expected Retirement Tax Rate (optional)</label>
+                    <div class="input-suffix">
+                        <input type="number" id="retirement-rate" placeholder="20" min="0" max="50">
+                    </div>
+                </div>
+
+                <button onclick="analyze()">Analyze My Situation</button>
+            </div>
+
+            <!-- Results -->
+            <div class="card">
+                <div class="card-title">Analysis Results</div>
+                <div id="results">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">Enter your info and click analyze</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>2024 tax brackets • For educational purposes only • Not financial advice</p>
+        </footer>
+    </div>
+
+    <script>
+        // ====================
+        // TAX DATA (2024)
+        // ====================
+
+        const FEDERAL_BRACKETS_SINGLE = [
+            [11600, 0.10],
+            [47150, 0.12],
+            [100525, 0.22],
+            [191950, 0.24],
+            [243725, 0.32],
+            [609350, 0.35],
+            [Infinity, 0.37]
+        ];
+
+        const FEDERAL_BRACKETS_MARRIED = [
+            [23200, 0.10],
+            [94300, 0.12],
+            [201050, 0.22],
+            [383900, 0.24],
+            [487450, 0.32],
+            [731200, 0.35],
+            [Infinity, 0.37]
+        ];
+
+        const STANDARD_DEDUCTION = {
+            single: 14600,
+            married: 29200,
+            head_of_household: 21900
+        };
+
+        const STATE_TAXES = {
+            AL: { rate: 0.05, name: "Alabama" },
+            AK: { rate: 0.00, name: "Alaska" },
+            AZ: { rate: 0.025, name: "Arizona" },
+            AR: { rate: 0.047, name: "Arkansas" },
+            CA: { rate: 0.093, name: "California" },
+            CO: { rate: 0.044, name: "Colorado" },
+            CT: { rate: 0.0699, name: "Connecticut" },
+            DE: { rate: 0.066, name: "Delaware" },
+            FL: { rate: 0.00, name: "Florida" },
+            GA: { rate: 0.0549, name: "Georgia" },
+            HI: { rate: 0.0825, name: "Hawaii" },
+            ID: { rate: 0.058, name: "Idaho" },
+            IL: { rate: 0.0495, name: "Illinois" },
+            IN: { rate: 0.0305, name: "Indiana" },
+            IA: { rate: 0.057, name: "Iowa" },
+            KS: { rate: 0.057, name: "Kansas" },
+            KY: { rate: 0.04, name: "Kentucky" },
+            LA: { rate: 0.0425, name: "Louisiana" },
+            ME: { rate: 0.0715, name: "Maine" },
+            MD: { rate: 0.0575, name: "Maryland" },
+            MA: { rate: 0.05, name: "Massachusetts" },
+            MI: { rate: 0.0425, name: "Michigan" },
+            MN: { rate: 0.0785, name: "Minnesota" },
+            MS: { rate: 0.05, name: "Mississippi" },
+            MO: { rate: 0.048, name: "Missouri" },
+            MT: { rate: 0.059, name: "Montana" },
+            NE: { rate: 0.0584, name: "Nebraska" },
+            NV: { rate: 0.00, name: "Nevada" },
+            NH: { rate: 0.00, name: "New Hampshire" },
+            NJ: { rate: 0.0637, name: "New Jersey" },
+            NM: { rate: 0.049, name: "New Mexico" },
+            NY: { rate: 0.0685, name: "New York" },
+            NC: { rate: 0.0525, name: "North Carolina" },
+            ND: { rate: 0.0195, name: "North Dakota" },
+            OH: { rate: 0.035, name: "Ohio" },
+            OK: { rate: 0.0475, name: "Oklahoma" },
+            OR: { rate: 0.09, name: "Oregon" },
+            PA: { rate: 0.0307, name: "Pennsylvania" },
+            RI: { rate: 0.0599, name: "Rhode Island" },
+            SC: { rate: 0.064, name: "South Carolina" },
+            SD: { rate: 0.00, name: "South Dakota" },
+            TN: { rate: 0.00, name: "Tennessee" },
+            TX: { rate: 0.00, name: "Texas" },
+            UT: { rate: 0.0465, name: "Utah" },
+            VT: { rate: 0.0875, name: "Vermont" },
+            VA: { rate: 0.0575, name: "Virginia" },
+            WA: { rate: 0.00, name: "Washington" },
+            WV: { rate: 0.0512, name: "West Virginia" },
+            WI: { rate: 0.0765, name: "Wisconsin" },
+            WY: { rate: 0.00, name: "Wyoming" },
+            DC: { rate: 0.0875, name: "District of Columbia" }
+        };
+
+        const CONTRIBUTION_LIMITS = {
+            k401: 23000,
+            k401_catch_up: 7500,
+            ira: 7000,
+            ira_catch_up: 1000
+        };
+
+        // Populate state dropdown
+        function populateStates() {
+            const select = document.getElementById('state');
+            const sorted = Object.entries(STATE_TAXES)
+                .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            
+            for (const [code, data] of sorted) {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${data.name} (${data.rate === 0 ? 'No tax' : (data.rate * 100).toFixed(1) + '%'})`;
+                select.appendChild(option);
+            }
+        }
+
+        // ====================
+        // TAX CALCULATIONS
+        // ====================
+
+        function getFederalBrackets(filingStatus) {
+            return filingStatus === 'married' ? FEDERAL_BRACKETS_MARRIED : FEDERAL_BRACKETS_SINGLE;
+        }
+
+        function calculateFederalTax(taxableIncome, filingStatus = 'single') {
+            const brackets = getFederalBrackets(filingStatus);
+            let tax = 0;
+            let prevLimit = 0;
+
+            for (const [limit, rate] of brackets) {
+                if (taxableIncome <= prevLimit) break;
+                const taxableInBracket = Math.min(taxableIncome, limit) - prevLimit;
+                tax += taxableInBracket * rate;
+                prevLimit = limit;
+            }
+
+            return tax;
+        }
+
+        function getMarginalFederalRate(taxableIncome, filingStatus = 'single') {
+            const brackets = getFederalBrackets(filingStatus);
+            
+            for (const [limit, rate] of brackets) {
+                if (taxableIncome <= limit) return rate;
+            }
+            
+            return brackets[brackets.length - 1][1];
+        }
+
+        function getStateRate(state) {
+            return STATE_TAXES[state]?.rate || 0;
+        }
+
+        function calculateStateTax(income, state) {
+            return income * getStateRate(state);
+        }
+
+        // ====================
+        // ANALYSIS
+        // ====================
+
+        function analyzeContribution(grossIncome, state, filingStatus, age, expectedRetirementRate) {
+            const stdDeduction = STANDARD_DEDUCTION[filingStatus] || STANDARD_DEDUCTION.single;
+            const taxableIncome = Math.max(0, grossIncome - stdDeduction);
+            
+            const federalMarginalRate = getMarginalFederalRate(taxableIncome, filingStatus);
+            const stateRate = getStateRate(state);
+            const combinedRate = federalMarginalRate + stateRate;
+            
+            const federalTax = calculateFederalTax(taxableIncome, filingStatus);
+            const stateTax = calculateStateTax(taxableIncome, state);
+            const totalTax = federalTax + stateTax;
+            
+            let limit401k = CONTRIBUTION_LIMITS.k401;
+            let limitIra = CONTRIBUTION_LIMITS.ira;
+            if (age >= 50) {
+                limit401k += CONTRIBUTION_LIMITS.k401_catch_up;
+                limitIra += CONTRIBUTION_LIMITS.ira_catch_up;
+            }
+
+            const recommendation = buildRecommendation(
+                federalMarginalRate,
+                stateRate,
+                combinedRate,
+                expectedRetirementRate,
+                state
+            );
+
+            return {
+                grossIncome,
+                standardDeduction: stdDeduction,
+                taxableIncome,
+                federalMarginalRate,
+                stateRate,
+                combinedRate,
+                federalTax,
+                stateTax,
+                totalTax,
+                limit401k,
+                limitIra,
+                recommendation
+            };
+        }
+
+        function buildRecommendation(fedRate, stateRate, combinedRate, expectedRetirementRate, state) {
+            const reasons = [];
+            let choice = '';
+
+            // Low federal bracket
+            if (fedRate <= 0.12) {
+                reasons.push(`You're in the ${(fedRate * 100).toFixed(0)}% federal bracket — historically low`);
+                choice = 'ROTH';
+            } else if (fedRate === 0.22) {
+                reasons.push(`You're in the 22% federal bracket — moderate rate`);
+                choice = 'CONSIDER BOTH';
+            } else {
+                reasons.push(`You're in the ${(fedRate * 100).toFixed(0)}% federal bracket — tax savings now are valuable`);
+                choice = 'TRADITIONAL';
+            }
+
+            // State tax
+            if (stateRate === 0) {
+                reasons.push(`${state} has no state income tax — no state tax savings from Traditional`);
+                if (choice !== 'TRADITIONAL') choice = 'ROTH';
+            } else if (stateRate >= 0.07) {
+                reasons.push(`Your state has a high tax rate (${(stateRate * 100).toFixed(1)}%) — Traditional saves more`);
+                if (fedRate >= 0.22) choice = 'TRADITIONAL';
+            }
+
+            // Retirement rate
+            if (expectedRetirementRate !== null && expectedRetirementRate !== undefined) {
+                if (expectedRetirementRate > combinedRate) {
+                    reasons.push(`Expected retirement rate (${(expectedRetirementRate * 100).toFixed(0)}%) > current (${(combinedRate * 100).toFixed(1)}%)`);
+                    choice = 'ROTH';
+                } else if (expectedRetirementRate < combinedRate) {
+                    reasons.push(`Expected retirement rate (${(expectedRetirementRate * 100).toFixed(0)}%) < current (${(combinedRate * 100).toFixed(1)}%)`);
+                    choice = 'TRADITIONAL';
+                }
+            }
+
+            // Tax sunset
+            if (fedRate <= 0.12) {
+                reasons.push('Current low rates may expire after 2025 (TCJA sunset)');
+            }
+
+            return { choice, reasons };
+        }
+
+        // ====================
+        // UI
+        // ====================
+
+        function formatCurrency(num) {
+            return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function formatPercent(num) {
+            return (num * 100).toFixed(1) + '%';
+        }
+
+        function analyze() {
+            const income = parseFloat(document.getElementById('income').value);
+            const state = document.getElementById('state').value;
+            const filing = document.getElementById('filing').value;
+            const age = parseInt(document.getElementById('age').value) || 30;
+            const retirementRateInput = document.getElementById('retirement-rate').value;
+            const retirementRate = retirementRateInput ? parseFloat(retirementRateInput) / 100 : null;
+
+            if (!income || !state) {
+                alert('Please enter your income and select a state');
+                return;
+            }
+
+            const results = analyzeContribution(income, state, filing, age, retirementRate);
+            displayResults(results);
+        }
+
+        function displayResults(r) {
+            const recClass = r.recommendation.choice === 'ROTH' ? 'roth' : 
+                            r.recommendation.choice === 'TRADITIONAL' ? 'traditional' : 'both';
+
+            const html = `
+                <div class="results-panel">
+                    <div class="result-section animate-in delay-1">
+                        <div class="recommendation-box ${recClass}">
+                            <div class="recommendation-label">Recommendation</div>
+                            <div class="recommendation-value">${r.recommendation.choice}</div>
+                        </div>
+                        <ul class="reasons-list">
+                            ${r.recommendation.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="result-section animate-in delay-2">
+                        <h3>Tax Rates</h3>
+                        <div class="stat-grid">
+                            <div class="stat">
+                                <div class="stat-label">Federal Marginal</div>
+                                <div class="stat-value blue">${formatPercent(r.federalMarginalRate)}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">State Rate</div>
+                                <div class="stat-value purple">${formatPercent(r.stateRate)}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Combined Rate</div>
+                                <div class="stat-value orange">${formatPercent(r.combinedRate)}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Total Est. Tax</div>
+                                <div class="stat-value">${formatCurrency(r.totalTax)}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-section animate-in delay-3">
+                        <h3>Income Breakdown</h3>
+                        <div class="comparison-table">
+                            <div class="comparison-row">
+                                <span class="comparison-label">Gross Income</span>
+                                <span class="comparison-value">${formatCurrency(r.grossIncome)}</span>
+                            </div>
+                            <div class="comparison-row">
+                                <span class="comparison-label">Standard Deduction</span>
+                                <span class="comparison-value">-${formatCurrency(r.standardDeduction)}</span>
+                            </div>
+                            <div class="comparison-row">
+                                <span class="comparison-label">Taxable Income</span>
+                                <span class="comparison-value">${formatCurrency(r.taxableIncome)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-section animate-in delay-4">
+                        <h3>2024 Contribution Limits</h3>
+                        <div class="stat-grid">
+                            <div class="stat">
+                                <div class="stat-label">401(k)</div>
+                                <div class="stat-value green">${formatCurrency(r.limit401k)}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">IRA</div>
+                                <div class="stat-value green">${formatCurrency(r.limitIra)}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = html;
+        }
+
+        // Initialize
+        populateStates();
+    </script>
+</body>
+</html>
