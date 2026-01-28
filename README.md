@@ -4,11 +4,11 @@ A comprehensive tool to help determine whether Roth or Traditional retirement co
 
 ## ✨ Features
 
-- **📊 Tax Analysis** — Get personalized Roth vs Traditional recommendations
-- **📈 Projections** — Visualize growth over 5-45 years with interactive charts
-- **⚖️ Scenario Comparison** — Compare multiple income/state combinations side-by-side
-- **📄 PDF Export** — Download professional reports of your analysis
-- **🌐 Deployment Ready** — Single HTML file, ready for GitHub Pages or Netlify
+- **📊 Tax Analysis** - Get personalized Roth vs Traditional recommendations
+- **📈 Projections** - Visualize growth over 5-45 years with interactive charts
+- **⚖️ Scenario Comparison** - Compare multiple income/state combinations side-by-side
+- **📄 PDF Export** - Download professional reports of your analysis
+- **🌐 Deployment Ready** - Single HTML file, ready for GitHub Pages or Netlify
 
 ## 📁 Files Included
 
