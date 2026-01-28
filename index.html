@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Contribution Advisor Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #141416;
+            --bg-card: #1a1a1e;
+            --bg-input: #222228;
+            --border: #2a2a30;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-muted: #6e6e73;
+            --accent-green: #34c759;
+            --accent-green-dim: rgba(52, 199, 89, 0.15);
+            --accent-blue: #007aff;
+            --accent-blue-dim: rgba(0, 122, 255, 0.15);
+            --accent-orange: #ff9500;
+            --accent-orange-dim: rgba(255, 149, 0, 0.15);
+            --accent-purple: #af52de;
+            --accent-purple-dim: rgba(175, 82, 222, 0.15);
+            --accent-red: #ff3b30;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: 'DM Mono', monospace;
+            font-size: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-dim);
+        }
+
+        .input-prefix {
+            position: relative;
+        }
+
+        .input-prefix input {
+            padding-left: 32px;
+        }
+
+        .input-prefix::before {
+            content: '$';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .input-suffix {
+            position: relative;
+        }
+
+        .input-suffix input {
+            padding-right: 32px;
+        }
+
+        .input-suffix::after {
+            content: '%';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* Buttons */
+        button {
+            padding: 14px 24px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+        }
+
+        button:hover {
+            background: #0a84ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        button.secondary {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--bg-card);
+            box-shadow: none;
+        }
+
+        button.success {
+            background: var(--accent-green);
+        }
+
+        button.success:hover {
+            background: #2db14e;
+            box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Stats */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .stat-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .stat {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-value.green { color: var(--accent-green); }
+        .stat-value.blue { color: var(--accent-blue); }
+        .stat-value.orange { color: var(--accent-orange); }
+        .stat-value.purple { color: var(--accent-purple); }
+
+        /* Recommendation */
+        .recommendation-box {
+            padding: 24px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-box.roth {
+            background: var(--accent-green-dim);
+            border: 1px solid var(--accent-green);
+        }
+
+        .recommendation-box.traditional {
+            background: var(--accent-orange-dim);
+            border: 1px solid var(--accent-orange);
+        }
+
+        .recommendation-box.both {
+            background: var(--accent-purple-dim);
+            border: 1px solid var(--accent-purple);
+        }
+
+        .recommendation-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .recommendation-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .recommendation-box.roth .recommendation-value { color: var(--accent-green); }
+        .recommendation-box.traditional .recommendation-value { color: var(--accent-orange); }
+        .recommendation-box.both .recommendation-value { color: var(--accent-purple); }
+
+        /* Reasons */
+        .reasons-list {
+            list-style: none;
+        }
+
+        .reasons-list li {
+            padding: 12px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .reasons-list li:last-child {
+            border-bottom: none;
+        }
+
+        .reasons-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        /* Scenario cards */
+        .scenario-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            position: relative;
+        }
+
+        .scenario-card.highlight {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 20px var(--accent-green-dim);
+        }
+
+        .scenario-badge {
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            background: var(--accent-green);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .scenario-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .scenario-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .scenario-stat:last-child {
+            border-bottom: none;
+        }
+
+        .scenario-stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .scenario-stat-value {
+            font-family: 'DM Mono', monospace;
+            font-weight: 500;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .comparison-table td {
+            font-family: 'DM Mono', monospace;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* PDF export section */
+        #pdf-content {
+            background: var(--bg-primary);
+            padding: 40px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .card {
+                background: white;
+                border: 1px solid #ddd;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Slider */
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-input);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        /* Legend */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.roth { background: var(--accent-green); }
+        .legend-dot.traditional { background: var(--accent-orange); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tax Contribution Advisor Pro</h1>
+            <p class="subtitle">Roth vs Traditional — Visualize, Compare, and Export</p>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs no-print">
+            <div class="tab active" data-tab="analyzer">📊 Analyzer</div>
+            <div class="tab" data-tab="projections">📈 Projections</div>
+            <div class="tab" data-tab="compare">⚖️ Compare Scenarios</div>
+            <div class="tab" data-tab="export">📄 Export PDF</div>
+        </div>
+
+        <!-- Tab 1: Analyzer -->
+        <div id="analyzer" class="tab-content active">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Your Information</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="income">Gross Annual Income</label>
+                            <div class="input-prefix">
+                                <input type="number" id="income" placeholder="50,000" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <select id="state"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="filing">Filing Status</label>
+                            <select id="filing">
+                                <option value="single">Single</option>
+                                <option value="married">Married Filing Jointly</option>
+                                <option value="head_of_household">Head of Household</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" placeholder="30" min="18" max="100" value="30">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contribution">Annual Contribution</label>
+                            <div class="input-prefix">
+                                <input type="number" id="contribution" placeholder="6,000" min="0" value="6000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="retirement-rate">Expected Retirement Tax Rate</label>
+                            <div class="input-suffix">
+                                <input type="number" id="retirement-rate" placeholder="20" min="0" max="50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="analyze()" style="width: 100%;">Analyze My Situation</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Analysis Results</div>
+                    <div id="results">
+                        <div class="empty-state">
+                            <div class="empty-icon">📊</div>
+                            <div>Enter your info and click analyze</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Projections -->
+        <div id="projections" class="tab-content">
+            <div class="card">
+                <div class="card-title">Roth vs Traditional Growth Over Time</div>
+                
+                <div class="grid-3 no-print">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Years to Retirement</span>
+                            <span id="years-value">30</span>
+                        </div>
+                        <input type="range" id="years-slider" min="5" max="45" value="30" oninput="updateProjection()">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Expected Return</span>
+                            <span id="return-value">7%</span>
+                        </div>
+                        <input type="range" id="return-slider" min="3" max="12" value="7" oninput="updateProjection()">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Retirement Tax Rate</span>
+                            <span id="retire-tax-value">20%</span>
+                        </div>
+                        <input type="range" id="retire-tax-slider" min="0" max="40" value="20" oninput="updateProjection()">
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="projectionChart"></canvas>
+                </div>
+
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot roth"></div>
+                        <span>Roth (After-Tax Value)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot traditional"></div>
+                        <span>Traditional (After-Tax Value)</span>
+                    </div>
+                </div>
+
+                <div id="projection-summary" style="margin-top: 24px;"></div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Compare Scenarios -->
+        <div id="compare" class="tab-content">
+            <div class="card no-print">
+                <div class="card-title">Add Scenarios to Compare</div>
+                
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>Scenario Name</label>
+                        <input type="text" id="scenario-name" placeholder="e.g., Current Job">
+                    </div>
+                    <div class="form-group">
+                        <label>Income</label>
+                        <div class="input-prefix">
+                            <input type="number" id="scenario-income" placeholder="50,000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="scenario-state"></select>
+                    </div>
+                </div>
+
+                <button onclick="addScenario()">+ Add Scenario</button>
+                <button class="secondary" onclick="clearScenarios()" style="margin-left: 12px;">Clear All</button>
+            </div>
+
+            <div id="scenarios-container" class="grid-3" style="margin-top: 24px;"></div>
+
+            <div class="card" id="comparison-table-card" style="display: none; margin-top: 24px;">
+                <div class="card-title">Side-by-Side Comparison</div>
+                <div id="comparison-table"></div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Export PDF -->
+        <div id="export" class="tab-content">
+            <div class="card">
+                <div class="card-title">Export Your Analysis</div>
+                
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Generate a PDF report of your tax analysis including recommendations, projections, and scenarios.
+                </p>
+
+                <div class="form-group">
+                    <label>Include in Report:</label>
+                    <div style="display: flex; gap: 24px; margin-top: 12px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="include-analysis" checked> Analysis Results
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="include-projection" checked> Projection Chart
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="include-scenarios" checked> Scenario Comparison
+                        </label>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="success" onclick="exportPDF()">📄 Download PDF Report</button>
+                    <button class="secondary" onclick="printReport()">🖨️ Print</button>
+                </div>
+            </div>
+
+            <!-- PDF Preview -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-title">Preview</div>
+                <div id="pdf-preview" style="background: var(--bg-secondary); padding: 24px; border-radius: var(--radius-sm);">
+                    <div class="empty-state">
+                        <div class="empty-icon">📄</div>
+                        <div>Run an analysis first to preview your report</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>2025 tax data • For educational purposes only • Not financial advice</p>
+            <p style="margin-top: 8px;">
+                <a href="https://github.com" target="_blank">View on GitHub</a> • 
+                Data sources: IRS, Tax Foundation
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // ====================
+        // TAX DATA (2025)
+        // ====================
+
+        const FEDERAL_BRACKETS_SINGLE = [
+            [11925, 0.10],
+            [48475, 0.12],
+            [103350, 0.22],
+            [197300, 0.24],
+            [250525, 0.32],
+            [626350, 0.35],
+            [Infinity, 0.37]
+        ];
+
+        const FEDERAL_BRACKETS_MARRIED = [
+            [23850, 0.10],
+            [96950, 0.12],
+            [206700, 0.22],
+            [394600, 0.24],
+            [501050, 0.32],
+            [751600, 0.35],
+            [Infinity, 0.37]
+        ];
+
+        const STANDARD_DEDUCTION = {
+            single: 15000,
+            married: 30000,
+            head_of_household: 22500
+        };
+
+        const STATE_TAXES = {
+            AL: { rate: 0.05, name: "Alabama" },
+            AK: { rate: 0.00, name: "Alaska" },
+            AZ: { rate: 0.025, name: "Arizona" },
+            AR: { rate: 0.039, name: "Arkansas" },
+            CA: { rate: 0.133, name: "California" },
+            CO: { rate: 0.044, name: "Colorado" },
+            CT: { rate: 0.0699, name: "Connecticut" },
+            DE: { rate: 0.066, name: "Delaware" },
+            FL: { rate: 0.00, name: "Florida" },
+            GA: { rate: 0.0539, name: "Georgia" },
+            HI: { rate: 0.11, name: "Hawaii" },
+            ID: { rate: 0.05695, name: "Idaho" },
+            IL: { rate: 0.0495, name: "Illinois" },
+            IN: { rate: 0.03, name: "Indiana" },
+            IA: { rate: 0.038, name: "Iowa" },
+            KS: { rate: 0.0558, name: "Kansas" },
+            KY: { rate: 0.04, name: "Kentucky" },
+            LA: { rate: 0.03, name: "Louisiana" },
+            ME: { rate: 0.0715, name: "Maine" },
+            MD: { rate: 0.0575, name: "Maryland" },
+            MA: { rate: 0.09, name: "Massachusetts" },
+            MI: { rate: 0.0425, name: "Michigan" },
+            MN: { rate: 0.0985, name: "Minnesota" },
+            MS: { rate: 0.044, name: "Mississippi" },
+            MO: { rate: 0.047, name: "Missouri" },
+            MT: { rate: 0.059, name: "Montana" },
+            NE: { rate: 0.052, name: "Nebraska" },
+            NV: { rate: 0.00, name: "Nevada" },
+            NH: { rate: 0.00, name: "New Hampshire" },
+            NJ: { rate: 0.1075, name: "New Jersey" },
+            NM: { rate: 0.059, name: "New Mexico" },
+            NY: { rate: 0.109, name: "New York" },
+            NC: { rate: 0.0425, name: "North Carolina" },
+            ND: { rate: 0.025, name: "North Dakota" },
+            OH: { rate: 0.035, name: "Ohio" },
+            OK: { rate: 0.0475, name: "Oklahoma" },
+            OR: { rate: 0.099, name: "Oregon" },
+            PA: { rate: 0.0307, name: "Pennsylvania" },
+            RI: { rate: 0.0599, name: "Rhode Island" },
+            SC: { rate: 0.062, name: "South Carolina" },
+            SD: { rate: 0.00, name: "South Dakota" },
+            TN: { rate: 0.00, name: "Tennessee" },
+            TX: { rate: 0.00, name: "Texas" },
+            UT: { rate: 0.0455, name: "Utah" },
+            VT: { rate: 0.0875, name: "Vermont" },
+            VA: { rate: 0.0575, name: "Virginia" },
+            WA: { rate: 0.00, name: "Washington" },
+            WV: { rate: 0.0482, name: "West Virginia" },
+            WI: { rate: 0.0765, name: "Wisconsin" },
+            WY: { rate: 0.00, name: "Wyoming" },
+            DC: { rate: 0.1075, name: "District of Columbia" }
+        };
+
+        const CONTRIBUTION_LIMITS = {
+            k401: 23500,
+            k401_catch_up: 7500,
+            ira: 7000,
+            ira_catch_up: 1000
+        };
+
+        // ====================
+        // STATE MANAGEMENT
+        // ====================
+
+        let currentResults = null;
+        let scenarios = [];
+        let projectionChart = null;
+
+        // ====================
+        // INITIALIZATION
+        // ====================
+
+        function populateStates() {
+            const selects = [document.getElementById('state'), document.getElementById('scenario-state')];
+            const sorted = Object.entries(STATE_TAXES)
+                .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            
+            selects.forEach(select => {
+                if (!select) return;
+                select.innerHTML = '<option value="">Select state</option>';
+                for (const [code, data] of sorted) {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = `${data.name} (${data.rate === 0 ? 'No tax' : (data.rate * 100).toFixed(1) + '%'})`;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        // ====================
+        // TAX CALCULATIONS
+        // ====================
+
+        function getFederalBrackets(filingStatus) {
+            return filingStatus === 'married' ? FEDERAL_BRACKETS_MARRIED : FEDERAL_BRACKETS_SINGLE;
+        }
+
+        function calculateFederalTax(taxableIncome, filingStatus = 'single') {
+            const brackets = getFederalBrackets(filingStatus);
+            let tax = 0;
+            let prevLimit = 0;
+
+            for (const [limit, rate] of brackets) {
+                if (taxableIncome <= prevLimit) break;
+                const taxableInBracket = Math.min(taxableIncome, limit) - prevLimit;
+                tax += taxableInBracket * rate;
+                prevLimit = limit;
+            }
+
+            return tax;
+        }
+
+        function getMarginalFederalRate(taxableIncome, filingStatus = 'single') {
+            const brackets = getFederalBrackets(filingStatus);
+            
+            for (const [limit, rate] of brackets) {
+                if (taxableIncome <= limit) return rate;
+            }
+            
+            return brackets[brackets.length - 1][1];
+        }
+
+        function getStateRate(state) {
+            return STATE_TAXES[state]?.rate || 0;
+        }
+
+        function calculateStateTax(income, state) {
+            return income * getStateRate(state);
+        }
+
+        // ====================
+        // ANALYSIS
+        // ====================
+
+        function analyzeContribution(grossIncome, state, filingStatus, age, expectedRetirementRate, contribution) {
+            const stdDeduction = STANDARD_DEDUCTION[filingStatus] || STANDARD_DEDUCTION.single;
+            const taxableIncome = Math.max(0, grossIncome - stdDeduction);
+            
+            const federalMarginalRate = getMarginalFederalRate(taxableIncome, filingStatus);
+            const stateRate = getStateRate(state);
+            const combinedRate = federalMarginalRate + stateRate;
+            
+            const federalTax = calculateFederalTax(taxableIncome, filingStatus);
+            const stateTax = calculateStateTax(taxableIncome, state);
+            const totalTax = federalTax + stateTax;
+            
+            let limit401k = CONTRIBUTION_LIMITS.k401;
+            let limitIra = CONTRIBUTION_LIMITS.ira;
+            if (age >= 50) {
+                limit401k += CONTRIBUTION_LIMITS.k401_catch_up;
+                limitIra += CONTRIBUTION_LIMITS.ira_catch_up;
+            }
+
+            const recommendation = buildRecommendation(
+                federalMarginalRate,
+                stateRate,
+                combinedRate,
+                expectedRetirementRate,
+                state
+            );
+
+            return {
+                grossIncome,
+                standardDeduction: stdDeduction,
+                taxableIncome,
+                federalMarginalRate,
+                stateRate,
+                combinedRate,
+                federalTax,
+                stateTax,
+                totalTax,
+                limit401k,
+                limitIra,
+                contribution: contribution || 6000,
+                recommendation
+            };
+        }
+
+        function buildRecommendation(fedRate, stateRate, combinedRate, expectedRetirementRate, state) {
+            const reasons = [];
+            let choice = '';
+
+            if (fedRate <= 0.12) {
+                reasons.push(`You're in the ${(fedRate * 100).toFixed(0)}% federal bracket — historically low`);
+                choice = 'ROTH';
+            } else if (fedRate === 0.22) {
+                reasons.push(`You're in the 22% federal bracket — moderate rate`);
+                choice = 'CONSIDER BOTH';
+            } else {
+                reasons.push(`You're in the ${(fedRate * 100).toFixed(0)}% federal bracket — tax savings now are valuable`);
+                choice = 'TRADITIONAL';
+            }
+
+            if (stateRate === 0) {
+                reasons.push(`${STATE_TAXES[state]?.name || state} has no state income tax`);
+                if (choice !== 'TRADITIONAL') choice = 'ROTH';
+            } else if (stateRate >= 0.07) {
+                reasons.push(`High state tax rate (${(stateRate * 100).toFixed(1)}%) — Traditional saves more`);
+                if (fedRate >= 0.22) choice = 'TRADITIONAL';
+            }
+
+            if (expectedRetirementRate !== null && expectedRetirementRate !== undefined) {
+                if (expectedRetirementRate > combinedRate) {
+                    reasons.push(`Expected retirement rate (${(expectedRetirementRate * 100).toFixed(0)}%) > current (${(combinedRate * 100).toFixed(1)}%)`);
+                    choice = 'ROTH';
+                } else if (expectedRetirementRate < combinedRate) {
+                    reasons.push(`Expected retirement rate (${(expectedRetirementRate * 100).toFixed(0)}%) < current (${(combinedRate * 100).toFixed(1)}%)`);
+                    choice = 'TRADITIONAL';
+                }
+            }
+
+            if (fedRate <= 0.12) {
+                reasons.push('Current low rates may change — lock in tax-free growth');
+            }
+
+            return { choice, reasons };
+        }
+
+        // ====================
+        // UI FUNCTIONS
+        // ====================
+
+        function formatCurrency(num) {
+            return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function formatPercent(num) {
+            return (num * 100).toFixed(1) + '%';
+        }
+
+        function analyze() {
+            const income = parseFloat(document.getElementById('income').value);
+            const state = document.getElementById('state').value;
+            const filing = document.getElementById('filing').value;
+            const age = parseInt(document.getElementById('age').value) || 30;
+            const contribution = parseFloat(document.getElementById('contribution').value) || 6000;
+            const retirementRateInput = document.getElementById('retirement-rate').value;
+            const retirementRate = retirementRateInput ? parseFloat(retirementRateInput) / 100 : null;
+
+            if (!income || !state) {
+                alert('Please enter your income and select a state');
+                return;
+            }
+
+            currentResults = analyzeContribution(income, state, filing, age, retirementRate, contribution);
+            displayResults(currentResults);
+            updateProjection();
+            updatePDFPreview();
+        }
+
+        function displayResults(r) {
+            const recClass = r.recommendation.choice === 'ROTH' ? 'roth' : 
+                            r.recommendation.choice === 'TRADITIONAL' ? 'traditional' : 'both';
+
+            document.getElementById('results').innerHTML = `
+                <div class="recommendation-box ${recClass}">
+                    <div class="recommendation-label">Recommendation</div>
+                    <div class="recommendation-value">${r.recommendation.choice}</div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat">
+                        <div class="stat-label">Federal Rate</div>
+                        <div class="stat-value blue">${formatPercent(r.federalMarginalRate)}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">State Rate</div>
+                        <div class="stat-value purple">${formatPercent(r.stateRate)}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Combined</div>
+                        <div class="stat-value orange">${formatPercent(r.combinedRate)}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Est. Tax</div>
+                        <div class="stat-value">${formatCurrency(r.totalTax)}</div>
+                    </div>
+                </div>
+
+                <ul class="reasons-list" style="margin-top: 20px;">
+                    ${r.recommendation.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // ====================
+        // PROJECTIONS
+        // ====================
+
+        function updateProjection() {
+            if (!currentResults) return;
+
+            const years = parseInt(document.getElementById('years-slider').value);
+            const returnRate = parseInt(document.getElementById('return-slider').value) / 100;
+            const retireTaxRate = parseInt(document.getElementById('retire-tax-slider').value) / 100;
+
+            document.getElementById('years-value').textContent = years;
+            document.getElementById('return-value').textContent = (returnRate * 100) + '%';
+            document.getElementById('retire-tax-value').textContent = (retireTaxRate * 100) + '%';
+
+            const contribution = currentResults.contribution;
+            const currentTaxRate = currentResults.combinedRate;
+
+            // Calculate projections
+            const rothData = [];
+            const tradData = [];
+            const labels = [];
+
+            let rothBalance = 0;
+            let tradBalance = 0;
+
+            // Roth: contribute after-tax dollars
+            const rothContribution = contribution * (1 - currentTaxRate);
+            // Traditional: contribute pre-tax dollars (full amount)
+            const tradContribution = contribution;
+
+            for (let year = 0; year <= years; year++) {
+                labels.push(year);
+                
+                // Roth grows tax-free, no tax on withdrawal
+                rothBalance = rothBalance * (1 + returnRate) + rothContribution;
+                rothData.push(rothBalance);
+
+                // Traditional grows tax-deferred, taxed on withdrawal
+                tradBalance = tradBalance * (1 + returnRate) + tradContribution;
+                tradData.push(tradBalance * (1 - retireTaxRate)); // After-tax value
+            }
+
+            renderProjectionChart(labels, rothData, tradData);
+
+            // Summary
+            const rothFinal = rothData[rothData.length - 1];
+            const tradFinal = tradData[tradData.length - 1];
+            const difference = rothFinal - tradFinal;
+            const winner = difference > 0 ? 'Roth' : 'Traditional';
+            const winnerClass = difference > 0 ? 'green' : 'orange';
+
+            document.getElementById('projection-summary').innerHTML = `
+                <div class="stat-grid">
+                    <div class="stat">
+                        <div class="stat-label">Roth Final Value</div>
+                        <div class="stat-value green">${formatCurrency(rothFinal)}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Traditional Final Value</div>
+                        <div class="stat-value orange">${formatCurrency(tradFinal)}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Difference</div>
+                        <div class="stat-value ${winnerClass}">${formatCurrency(Math.abs(difference))}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Better Choice</div>
+                        <div class="stat-value ${winnerClass}">${winner}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProjectionChart(labels, rothData, tradData) {
+            const ctx = document.getElementById('projectionChart').getContext('2d');
+
+            if (projectionChart) {
+                projectionChart.destroy();
+            }
+
+            projectionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Roth (After-Tax)',
+                            data: rothData,
+                            borderColor: '#34c759',
+                            backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Traditional (After-Tax)',
+                            data: tradData,
+                            borderColor: '#ff9500',
+                            backgroundColor: 'rgba(255, 149, 0, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Years',
+                                color: '#a1a1a6'
+                            },
+                            grid: {
+                                color: '#2a2a30'
+                            },
+                            ticks: {
+                                color: '#a1a1a6'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'After-Tax Value',
+                                color: '#a1a1a6'
+                            },
+                            grid: {
+                                color: '#2a2a30'
+                            },
+                            ticks: {
+                                color: '#a1a1a6',
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ====================
+        // SCENARIO COMPARISON
+        // ====================
+
+        function addScenario() {
+            const name = document.getElementById('scenario-name').value || `Scenario ${scenarios.length + 1}`;
+            const income = parseFloat(document.getElementById('scenario-income').value);
+            const state = document.getElementById('scenario-state').value;
+
+            if (!income || !state) {
+                alert('Please enter income and select a state');
+                return;
+            }
+
+            const results = analyzeContribution(income, state, 'single', 30, null, 6000);
+            scenarios.push({ name, income, state, results });
+
+            renderScenarios();
+            
+            // Clear inputs
+            document.getElementById('scenario-name').value = '';
+            document.getElementById('scenario-income').value = '';
+        }
+
+        function clearScenarios() {
+            scenarios = [];
+            renderScenarios();
+        }
+
+        function renderScenarios() {
+            const container = document.getElementById('scenarios-container');
+            
+            if (scenarios.length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <div class="empty-state">
+                            <div class="empty-icon">⚖️</div>
+                            <div>Add scenarios above to compare</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('comparison-table-card').style.display = 'none';
+                return;
+            }
+
+            // Find best scenario (lowest combined tax rate)
+            const bestIdx = scenarios.reduce((best, s, i) => 
+                s.results.combinedRate < scenarios[best].results.combinedRate ? i : best, 0);
+
+            container.innerHTML = scenarios.map((s, i) => {
+                const isBest = i === bestIdx;
+                const recClass = s.results.recommendation.choice === 'ROTH' ? 'green' : 
+                                s.results.recommendation.choice === 'TRADITIONAL' ? 'orange' : 'purple';
+                
+                return `
+                    <div class="scenario-card ${isBest ? 'highlight' : ''}">
+                        ${isBest ? '<div class="scenario-badge">Best Option</div>' : ''}
+                        <div class="scenario-title">${s.name}</div>
+                        <div class="scenario-stat">
+                            <span class="scenario-stat-label">Income</span>
+                            <span class="scenario-stat-value">${formatCurrency(s.income)}</span>
+                        </div>
+                        <div class="scenario-stat">
+                            <span class="scenario-stat-label">State</span>
+                            <span class="scenario-stat-value">${STATE_TAXES[s.state]?.name || s.state}</span>
+                        </div>
+                        <div class="scenario-stat">
+                            <span class="scenario-stat-label">Combined Rate</span>
+                            <span class="scenario-stat-value">${formatPercent(s.results.combinedRate)}</span>
+                        </div>
+                        <div class="scenario-stat">
+                            <span class="scenario-stat-label">Est. Tax</span>
+                            <span class="scenario-stat-value">${formatCurrency(s.results.totalTax)}</span>
+                        </div>
+                        <div class="scenario-stat">
+                            <span class="scenario-stat-label">Recommendation</span>
+                            <span class="scenario-stat-value" style="color: var(--accent-${recClass});">${s.results.recommendation.choice}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render comparison table
+            document.getElementById('comparison-table-card').style.display = 'block';
+            document.getElementById('comparison-table').innerHTML = `
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            ${scenarios.map(s => `<th>${s.name}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gross Income</td>
+                            ${scenarios.map(s => `<td>${formatCurrency(s.income)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td>State</td>
+                            ${scenarios.map(s => `<td>${STATE_TAXES[s.state]?.name || s.state}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td>Federal Rate</td>
+                            ${scenarios.map(s => `<td>${formatPercent(s.results.federalMarginalRate)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td>State Rate</td>
+                            ${scenarios.map(s => `<td>${formatPercent(s.results.stateRate)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td>Combined Rate</td>
+                            ${scenarios.map(s => `<td>${formatPercent(s.results.combinedRate)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td>Estimated Tax</td>
+                            ${scenarios.map(s => `<td>${formatCurrency(s.results.totalTax)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td>Recommendation</td>
+                            ${scenarios.map(s => `<td>${s.results.recommendation.choice}</td>`).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            updatePDFPreview();
+        }
+
+        // ====================
+        // PDF EXPORT
+        // ====================
+
+        function updatePDFPreview() {
+            const preview = document.getElementById('pdf-preview');
+            
+            if (!currentResults) {
+                preview.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📄</div>
+                        <div>Run an analysis first to preview your report</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const includeAnalysis = document.getElementById('include-analysis').checked;
+            const includeProjection = document.getElementById('include-projection').checked;
+            const includeScenarios = document.getElementById('include-scenarios').checked;
+
+            let html = `
+                <div style="font-family: 'DM Sans', sans-serif; color: #f5f5f7;">
+                    <h2 style="margin-bottom: 8px;">Tax Contribution Analysis Report</h2>
+                    <p style="color: #a1a1a6; margin-bottom: 24px;">Generated on ${new Date().toLocaleDateString()}</p>
+            `;
+
+            if (includeAnalysis && currentResults) {
+                const r = currentResults;
+                html += `
+                    <h3 style="margin-top: 24px; margin-bottom: 16px;">Analysis Results</h3>
+                    <p><strong>Recommendation:</strong> ${r.recommendation.choice}</p>
+                    <p><strong>Gross Income:</strong> ${formatCurrency(r.grossIncome)}</p>
+                    <p><strong>Federal Rate:</strong> ${formatPercent(r.federalMarginalRate)}</p>
+                    <p><strong>State Rate:</strong> ${formatPercent(r.stateRate)}</p>
+                    <p><strong>Combined Rate:</strong> ${formatPercent(r.combinedRate)}</p>
+                    <p><strong>Estimated Tax:</strong> ${formatCurrency(r.totalTax)}</p>
+                    
+                    <h4 style="margin-top: 16px;">Reasons:</h4>
+                    <ul>
+                        ${r.recommendation.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            if (includeScenarios && scenarios.length > 0) {
+                html += `
+                    <h3 style="margin-top: 24px; margin-bottom: 16px;">Scenario Comparison</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #222;">
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #333;">Scenario</th>
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #333;">Income</th>
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #333;">State</th>
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #333;">Combined Rate</th>
+                            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #333;">Recommendation</th>
+                        </tr>
+                        ${scenarios.map(s => `
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #333;">${s.name}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #333;">${formatCurrency(s.income)}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #333;">${STATE_TAXES[s.state]?.name || s.state}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #333;">${formatPercent(s.results.combinedRate)}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #333;">${s.results.recommendation.choice}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                `;
+            }
+
+            html += `
+                <p style="margin-top: 32px; color: #6e6e73; font-size: 0.85rem;">
+                    This report is for educational purposes only and does not constitute financial advice.
+                    Data sources: IRS, Tax Foundation (2025).
+                </p>
+            </div>
+            `;
+
+            preview.innerHTML = html;
+        }
+
+        function exportPDF() {
+            if (!currentResults) {
+                alert('Please run an analysis first');
+                return;
+            }
+
+            const element = document.getElementById('pdf-preview');
+            const opt = {
+                margin: 10,
+                filename: 'tax-contribution-analysis.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, backgroundColor: '#0a0a0b' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // ====================
+        // TAB NAVIGATION
+        // ====================
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+
+                // Update projection when switching to that tab
+                if (tab.dataset.tab === 'projections' && currentResults) {
+                    updateProjection();
+                }
+            });
+        });
+
+        // ====================
+        // INITIALIZE
+        // ====================
+
+        populateStates();
+
+        // Listen for checkbox changes to update preview
+        document.querySelectorAll('#export input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', updatePDFPreview);
+        });
+    </script>
+</body>
+</html>
