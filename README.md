@@ -97,43 +97,6 @@ The tool analyzes your situation based on:
 | No state income tax | Leans ROTH |
 | High state tax (7%+) | Leans TRADITIONAL |
 
-## 🛠️ Extending the App
-
-### Add Full State Brackets
-The current version uses simplified top rates. To add full bracket data:
-
-1. Install openpyxl: `pip install openpyxl`
-2. Download Tax Foundation Excel
-3. Modify `tax_data_updater.py` to parse detailed brackets
-
-### Deploy Web Version
-The HTML file can be deployed to:
-- GitHub Pages (free)
-- Netlify (free)
-- Any static hosting
-
-### Add Features
-Ideas for expansion:
-- Retirement projections with compound growth
-- Side-by-side Roth vs. Traditional comparison
-- Tax-loss harvesting calculator
-- State-specific deductions and credits
-
-## 🌐 Deploy Online (Free)
-
-### GitHub Pages (Recommended)
-1. Create a new GitHub repository
-2. Upload `index.html` to the repo
-3. Go to Settings → Pages → Enable from main branch
-4. Your site is live at `https://username.github.io/repo-name`
-
-### Netlify (Easiest)
-1. Go to [netlify.com](https://netlify.com)
-2. Drag and drop `index.html`
-3. Done! Instant URL provided
-
-See **DEPLOY.md** for detailed instructions.
-
 ## ⚠️ Disclaimer
 
 This tool is for educational purposes only and should not be considered financial or tax advice. Tax situations vary by individual. Consult a qualified tax professional for personalized advice.
